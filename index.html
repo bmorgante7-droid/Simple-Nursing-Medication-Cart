@@ -4,118 +4,254 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nursing Medication Cart</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100vh;
-    background: #e6e6e6;
-    margin: 0;
-    padding: 20px;
-  }
 
-  h1 {
-    text-align: center;
-    font-size: 2em;
-    color: #333;
-    margin-bottom: 25px;
-  }
-  .cart-container { position: relative; }
-  .cart { width: 400px; background: #c0c0c0; border-radius: 8px; border: 3px solid #999; box-shadow: 0 10px 20px rgba(0,0,0,0.4); overflow: hidden; perspective: 1200px; position: relative; padding-bottom: 40px; }
-  .wheel { width: 30px; height: 30px; background: #333; border-radius: 50%; position: absolute; bottom: -15px; box-shadow: inset -2px -2px 5px rgba(0,0,0,0.4); }
-  .wheel.front-left { left: 15px; } .wheel.front-right { right: 15px; } .wheel.back-left { left: 15px; bottom: -15px; } .wheel.back-right { right: 15px; bottom: -15px; }
-  .drawer { border-top: 2px solid #999; background: #dcdcdc; cursor: pointer; padding: 15px; position: relative; transition: transform 0.5s ease, box-shadow 0.3s; }
-  .drawer:hover { box-shadow: inset 0 0 15px rgba(0,0,0,0.1); }
-  .drawer-label { font-weight: bold; font-size: 1.2em; margin-bottom: 5px; }
-  .handle { width: 60px; height: 8px; background: #888; border-radius: 4px; margin: 0 auto 10px auto; }
-  .medications { display: none; background: #f9f9f9; margin-top: 10px; flex-wrap: wrap; gap: 10px; padding: 0 5px 10px 5px; flex-direction: row; justify-content: flex-start; }
-  .medication { width: 70px; height: 100px; border-radius: 25px; display: flex; justify-content: center; align-items: center; text-align: center; font-size: 0.6em; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); transition: transform 0.3s; border: 1px solid #ccc; background: #fff; padding: 5px; word-break: break-word; white-space: normal; }
-  .medication:hover { transform: scale(1.1); box-shadow: 4px 4px 8px rgba(0,0,0,0.2); }
-  .popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.4); display: none; width: 300px; z-index: 1000; }
-  .popup h3 { margin-top: 0; }
-  .popup button { margin-top: 15px; padding: 5px 10px; border: none; background: #007BFF; color: #fff; border-radius: 4px; cursor: pointer; }
-  .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); display: none; z-index: 900; }
+<style>
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #e6e6e6;
+}
+
+.cart-container { position: relative; }
+
+.cart {
+  width: 400px;
+  background: #c0c0c0;
+  border-radius: 8px;
+  border: 3px solid #999;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+  overflow: hidden;
+  perspective: 1200px;
+  position: relative;
+  padding-bottom: 40px;
+}
+
+.wheel {
+  width: 30px;
+  height: 30px;
+  background: #333;
+  border-radius: 50%;
+  position: absolute;
+  bottom: -15px;
+}
+
+.wheel.front-left { left: 15px; }
+.wheel.front-right { right: 15px; }
+.wheel.back-left { left: 15px; }
+.wheel.back-right { right: 15px; }
+
+.drawer {
+  border-top: 2px solid #999;
+  background: #dcdcdc;
+  cursor: pointer;
+  padding: 15px;
+  transition: transform 0.5s ease, box-shadow 0.3s;
+}
+
+.drawer:hover {
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+}
+
+.drawer-label {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.handle {
+  width: 60px;
+  height: 8px;
+  background: #888;
+  border-radius: 4px;
+  margin: 10px auto;
+}
+
+.medications {
+  display: none;
+  background: #f9f9f9;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 5px 5px 10px 5px;
+}
+
+.medication {
+  width: 70px;
+  height: 100px;
+  border-radius: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 0.65em;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+  border: 1px solid #ccc;
+  background: #fff;
+  padding: 5px;
+}
+
+.medication:hover {
+  transform: scale(1.1);
+  box-shadow: 4px 4px 8px rgba(0,0,0,0.2);
+}
+
+/* POPUP */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+  display: none;
+  width: 320px;
+  z-index: 1000;
+  text-align: center;
+}
+
+.popup img {
+  width: 100%;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+.popup button {
+  margin-top: 15px;
+  padding: 6px 12px;
+  border: none;
+  background: #007BFF;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.3);
+  display: none;
+  z-index: 900;
+}
 </style>
 </head>
+
 <body>
-  <h1>Nursing Medication Cart</h1>
+
 <div class="cart-container">
-  <div class="cart">
-    <div class="drawer" onclick="toggleDrawer(this)">
-      <div class="drawer-label">Pain Relief</div>
-      <div class="handle"></div>
-      <div class="medications"></div>
-    </div>
-    <div class="drawer" onclick="toggleDrawer(this)">
-      <div class="drawer-label">Antibiotics</div>
-      <div class="handle"></div>
-      <div class="medications"></div>
-    </div>
-    <div class="drawer" onclick="toggleDrawer(this)">
-      <div class="drawer-label">Cardio & Diabetic</div>
-      <div class="handle"></div>
-      <div class="medications"></div>
-    </div>
-    <div class="wheel front-left"></div>
-    <div class="wheel front-right"></div>
-    <div class="wheel back-left"></div>
-    <div class="wheel back-right"></div>
-  </div>
+<div class="cart">
+
+<div class="drawer" onclick="toggleDrawer(this)">
+  <div class="drawer-label">Pain Relief</div>
+  <div class="handle"></div>
+  <div class="medications"></div>
 </div>
+
+<div class="drawer" onclick="toggleDrawer(this)">
+  <div class="drawer-label">Antibiotics</div>
+  <div class="handle"></div>
+  <div class="medications"></div>
+</div>
+
+<div class="drawer" onclick="toggleDrawer(this)">
+  <div class="drawer-label">Cardio & Diabetic</div>
+  <div class="handle"></div>
+  <div class="medications"></div>
+</div>
+
+<div class="wheel front-left"></div>
+<div class="wheel front-right"></div>
+<div class="wheel back-left"></div>
+<div class="wheel back-right"></div>
+
+</div>
+</div>
+
 <div class="overlay" id="overlay" onclick="closePopup()"></div>
+
 <div class="popup" id="popup">
   <h3 id="popupTitle"></h3>
-  <p id="popupContent"></p>
+  <img id="popupImage" src="" alt="Medication Label">
   <button onclick="closePopup()">Close</button>
 </div>
+
 <script>
+
+/* ---------- MEDICATION DATA WITH IMAGES ---------- */
+/* Put label images inside an /images folder */
+
 const medicationData = {
   'Pain Relief': [
-    {name: 'Acetaminophen 500mg', info: 'Pain relief tablet\nManufacturer: ABC Pharma\nExpiration: 12/2025\nLot: A12345\nInstructions: Take 1-2 tablets every 6 hours as needed'},
-    {name: 'Ibuprofen 200mg', info: 'NSAID tablet\nManufacturer: XYZ Pharma\nExpiration: 08/2024\nLot: B67890\nInstructions: Take 1 tablet every 4-6 hours with food'},
-    {name: 'Morphine 2mg IV', info: 'Opioid injection\nManufacturer: DEF Pharma\nExpiration: 03/2025\nLot: C11223\nInstructions: Administer IV as prescribed'}
+    {name:'Acetaminophen 500mg', image:'images/tylenol.jpg'},
+    {name:'Ibuprofen 200mg', image:'images/ibuprofen.jpg'},
+    {name:'Morphine 2mg IV', image:'images/morphine.jpg'}
   ],
   'Antibiotics': [
-    {name: 'Amoxicillin 250mg', info: 'Tablet\nManufacturer: Medico\nExpiration: 06/2025\nLot: D33445\nInstructions: Take 1 tablet every 8 hours'},
-    {name: 'Ceftriaxone 1g IV', info: 'Injection\nManufacturer: HealthCorp\nExpiration: 11/2024\nLot: E55667\nInstructions: Administer IV as prescribed'},
-    {name: 'Azithromycin 250mg/5ml', info: 'Liquid suspension\nManufacturer: PharmaPlus\nExpiration: 05/2025\nLot: F77889\nInstructions: 5ml once daily for 3 days'}
+    {name:'Amoxicillin 250mg', image:'images/amoxicillin.jpg'},
+    {name:'Ceftriaxone 1g IV', image:'images/ceftriaxone.jpg'},
+    {name:'Azithromycin Suspension', image:'images/azithromycin.jpg'}
   ],
   'Cardio & Diabetic': [
-    {name: 'Insulin Glargine 10U', info: 'Injection\nManufacturer: Glaxo\nExpiration: 02/2025\nLot: G99001\nInstructions: Administer subcutaneously once daily'},
-    {name: 'Metformin 500mg', info: 'Tablet\nManufacturer: BioHealth\nExpiration: 07/2025\nLot: H22334\nInstructions: Take 1 tablet twice daily with meals'},
-    {name: 'Lisinopril 10mg', info: 'Tablet\nManufacturer: CureMed\nExpiration: 09/2024\nLot: I44556\nInstructions: Take 1 tablet daily'},
-    {name: 'Warfarin 5mg/5ml', info: 'Liquid\nManufacturer: Antico Pharma\nExpiration: 01/2025\nLot: J66778\nInstructions: 5ml daily as prescribed'}
+    {name:'Insulin Glargine', image:'images/insulin.jpg'},
+    {name:'Metformin 500mg', image:'images/metformin.jpg'},
+    {name:'Lisinopril 10mg', image:'images/lisinopril.jpg'},
+    {name:'Warfarin Liquid', image:'images/warfarin.jpg'}
   ]
 };
+
+/* ---------- BUILD MEDICATION BUTTONS ---------- */
 document.querySelectorAll('.drawer').forEach(drawer => {
   const label = drawer.querySelector('.drawer-label').innerText;
   const medsContainer = drawer.querySelector('.medications');
+
   medicationData[label].forEach(med => {
     const medDiv = document.createElement('div');
     medDiv.className = 'medication';
     medDiv.innerText = med.name;
-    medDiv.onclick = (e) => showInfo(e, med.name, med.info);
+
+    medDiv.onclick = (e) => showImage(e, med.name, med.image);
+
     medsContainer.appendChild(medDiv);
   });
 });
+
+/* ---------- DRAWER OPEN/CLOSE ---------- */
 function toggleDrawer(drawer) {
   const meds = drawer.querySelector('.medications');
-  meds.style.display = meds.style.display === 'flex' ? 'none' : 'flex';
-  drawer.style.transform = meds.style.display === 'flex' ? 'translateZ(20px)' : 'translateZ(0)';
+
+  if (meds.style.display === 'flex') {
+    meds.style.display = 'none';
+    drawer.style.transform = 'translateZ(0)';
+  } else {
+    meds.style.display = 'flex';
+    drawer.style.transform = 'translateZ(20px)';
+  }
 }
-function showInfo(event, title, content) {
+
+/* ---------- IMAGE POPUP ---------- */
+function showImage(event, title, imageSrc) {
   event.stopPropagation();
+
   document.getElementById('popupTitle').innerText = title;
-  document.getElementById('popupContent').innerText = content;
+  document.getElementById('popupImage').src = imageSrc;
+
   document.getElementById('popup').style.display = 'block';
   document.getElementById('overlay').style.display = 'block';
 }
+
 function closePopup() {
   document.getElementById('popup').style.display = 'none';
   document.getElementById('overlay').style.display = 'none';
+  document.getElementById('popupImage').src = "";
 }
+
 </script>
+
 </body>
 </html>
